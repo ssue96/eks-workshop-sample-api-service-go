@@ -4,7 +4,9 @@ pipeline {
     stage('ready') {
       steps {
         git(url: 'https://github.com/ssue96/eks-workshop-sample-api-service-go.git', branch: 'master', credentialsId: 'a0bb03f6-d72f-4498-b2df-09669e1feb61')
-        sh 'git pull'
+        sh '''pwd
+cd /home/ec2-user/jenkins/eks-workshop-sample-api-service-go
+git pull'''
       }
     }
 
@@ -17,7 +19,8 @@ docker build -t eks-workshop .'''
 
     stage('push') {
       steps {
-        sh '''$(aws ecr get-login --no-include-email --region ap-northeast-2)
+        sh '''pwd
+$(aws ecr get-login --no-include-email --region ap-northeast-2)
 docker tag eks-workshop:latest 536983495792.dkr.ecr.ap-northeast-2.amazonaws.com/eks-workshop:latest
 docker push 536983495792.dkr.ecr.ap-northeast-2.amazonaws.com/eks-workshop:latest
 '''
@@ -26,7 +29,8 @@ docker push 536983495792.dkr.ecr.ap-northeast-2.amazonaws.com/eks-workshop:lates
 
     stage('deploy') {
       steps {
-        sh '''kubectl apply -f hello-k8s.yml
+        sh '''pwd
+kubectl apply -f hello-k8s.yml
 '''
       }
     }
