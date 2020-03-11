@@ -14,3 +14,16 @@ In the hello-k8s.yml file, you will find the Kubernetes [service](https://kubern
 [deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) definitions. The service is configured with
 a [LoadBalancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/) which prompts Kubernetes
 to launch an external load balancer using an [AWS ELB](https://aws.amazon.com/elasticloadbalancing/).
+
+
+
+
+
+
+4b68f37235a7d477378623aaccdf38b8155122d6
+
+https://m.blog.naver.com/PostView.nhn?blogId=alice_k106&logNo=221562805601&proxyReferer=https%3A%2F%2Fwww.google.com%2F
+
+https://woowabros.github.io/experience/2018/03/13/k8s-test.html
+
+https://gist.github.com/mattiasholmqvist/30eb8c1c6426bd6ac436d6d8f87955ee
