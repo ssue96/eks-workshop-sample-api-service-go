@@ -10,7 +10,8 @@ pipeline {
 
     stage('build') {
       steps {
-        sh 'docker build -t eks-workshop .'
+        sh '''pwd
+docker build -t eks-workshop .'''
       }
     }
 
