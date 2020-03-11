@@ -5,8 +5,8 @@ pipeline {
       steps {
         git(url: 'https://github.com/ssue96/eks-workshop-sample-api-service-go.git', branch: 'master', credentialsId: 'a0bb03f6-d72f-4498-b2df-09669e1feb61')
         sh '''pwd
-cd /home/ec2-user/jenkins/eks-workshop-sample-api-service-go
-git pull'''
+git pull
+ls -al'''
       }
     }
 
