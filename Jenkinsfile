@@ -1,39 +1,47 @@
-pipeline {
-  agent any
-  stages {
-    stage('ready') {
-      steps {
-        git(url: 'https://github.com/ssue96/eks-workshop-sample-api-service-go.git', branch: 'master', credentialsId: 'a0bb03f6-d72f-4498-b2df-09669e1feb61')
-        sh '''pwd
-git pull
-ls -al'''
-      }
+podTemplate(
+    label: 'mypod',
+    volumes: [
+        emptyDirVolume(mountPath: '/etc/gitrepo', memory: false),
+        hostPathVolume(mountPath: '/var/run/docker.sock', hostPath: '/var/run/docker.sock')
+    ],
+    containers:
+    [
+        containerTemplate(name: 'git', image: 'alpine/git', ttyEnabled: true, command: 'cat'),
+        containerTemplate(name: 'kubectl', image: 'bitnami/kubectl', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true
+            //envVars: [secretEnvVar(key: 'DOCKER_HUB_PASSWORD', secretName: 'docker-hub-password', secretKey: 'DOCKER_HUB_PASSWORD')]
+            )
+        
+    ]
+)
+{
+    node('mypod') {
+        stage('Clone repository') {
+            container('git') {
+                sh 'git clone -b master https://github.com/ssue96/eks-workshop-sample-api-service-go.git /etc/gitrepo'
+            }
+        }
+        stage('Build and push docker image'){
+            container('docker') {
+                //ls -al
+                //sh 'docker login -ualicek106 -p$DOCKER_HUB_PASSWORD'
+                sh '''
+                cd /etc/gitrepo
+                pwd
+                ls -al
+                docker build -t eks-workshop .
+                '''
+                //sh 'docker push alicek106/kubernetes-python-sdk-example'
+            }
+        }
+        // stage('deploy') {
+        //     container('kubectl') {
+        //         sh '''
+        //         pwd
+        //         ls -al
+        //         kubectl apply -f hello-k8s.yml
+        //         '''
+        //     }
+        // }
     }
-
-    stage('build') {
-      steps {
-        sh '''pwd
-docker build -t eks-workshop .'''
-      }
-    }
-
-    stage('push') {
-      steps {
-        sh '''pwd
-$(aws ecr get-login --no-include-email --region ap-northeast-2)
-docker tag eks-workshop:latest 536983495792.dkr.ecr.ap-northeast-2.amazonaws.com/eks-workshop:latest
-docker push 536983495792.dkr.ecr.ap-northeast-2.amazonaws.com/eks-workshop:latest
-'''
-      }
-    }
-
-    stage('deploy') {
-      steps {
-        sh '''pwd
-kubectl apply -f hello-k8s.yml
-'''
-      }
-    }
-
-  }
 }
