@@ -7,7 +7,7 @@ podTemplate(
     containers:
     [
         containerTemplate(name: 'git', image: 'alpine/git', ttyEnabled: true, command: 'cat'),
-        containerTemplate(name: 'kubectl', image: 'bitnami/kubectl', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'kubectl', image: 'lachlanevenson/k8s-kubectl:v1.8.0', command: 'cat', ttyEnabled: true),
         containerTemplate(name: 'docker', image: 'docker', command: 'cat', ttyEnabled: true
             //envVars: [secretEnvVar(key: 'DOCKER_HUB_PASSWORD', secretName: 'docker-hub-password', secretKey: 'DOCKER_HUB_PASSWORD')]
             )
@@ -18,7 +18,7 @@ podTemplate(
     node('mypod') {
         stage('Clone repository') {
             container('git') {
-                sh 'git clone -b master https://github.com/ssue96/eks-workshop-sample-api-service-go.git /etc/gitrepo'
+                sh 'git clone -b test https://github.com/ssue96/eks-workshop-sample-api-service-go.git /etc/gitrepo'
             }
         }
         stage('Build and push docker image'){
@@ -34,14 +34,19 @@ podTemplate(
                 //sh 'docker push alicek106/kubernetes-python-sdk-example'
             }
         }
-        // stage('deploy') {
-        //     container('kubectl') {
-        //         sh '''
-        //         pwd
-        //         ls -al
-        //         kubectl apply -f hello-k8s.yml
-        //         '''
-        //     }
-        // }
+        stage('deploy') {
+            container('kubectl') {
+                sh '''
+                #cd /etc/gitrepo/Jenkins
+                cd /etc/gitrepo
+                pwd
+                ls -al
+                #kubectl apply -f cluster-role-binding.yaml
+                kubectl apply -f hello-k8s.yml
+                kubectl get nodes
+                kubectl get pods
+                '''
+            }
+        }
     }
 }
